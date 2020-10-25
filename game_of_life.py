@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import matplotlib.colors
 
 class Grid:
     # Properties
@@ -11,6 +14,10 @@ class Grid:
             raise Exception('Only square boards available')
     iterations = 0
     live_cells = 0
+    color0 = 'k'
+    color1 = 'w'
+    gridc = 'darkgrey'
+    fig, ax = plt.subplots()
 
     # Methods
     def randgen(self, cant):
@@ -42,6 +49,14 @@ class Grid:
                 if len(row) != self.size:
                     raise Exception('Length error')
             self.grid = np.array(matrix)
+
+    def create_image(self, i):
+        # self.step()
+        cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
+        self.ax.pcolor(np.flip(self.grid, 0), edgecolors=self.gridc, linewidths=1, snap=True, cmap=cmap)
+        self.ax.axis('off')
+        plt.tight_layout()
+        plt.show
 
     def visualize(self):
         """Printable version of the game state"""
@@ -207,15 +222,16 @@ patterns = {
 }
 
 if __name__ == "__main__":
-    # cuadricula = Grid(4)
+    cuadricula = Grid(40)
     # cuadricula.randgen(6)
-    # cuadricula.manualgen(patterns.get('GGG'))
-    # cuadricula.visualize()
-    # for i in range(500):
-    #     cuadricula.toroidal_step()
-    #     cuadricula.visualize()
-    
-    cuadricula = docgen('/Users/Macbook/Desktop/Python/PrograM/Proyecto 2/carga.pm2')
+    cuadricula.manualgen(patterns.get('GGG'))
     cuadricula.visualize()
+    for i in range(500):
+        # cuadricula.create_image(i)
+        cuadricula.toroidal_step()
+        cuadricula.visualize()
+    
+    # cuadricula = docgen('/Users/Macbook/Desktop/Python/PrograM/Proyecto 2/carga.pm2')
+    # cuadricula.visualize()
 
 #
