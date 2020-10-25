@@ -52,11 +52,14 @@ class Grid:
 
     def create_image(self, i):
         # self.step()
+        texto = f'Generación: {self.iterations}\nCelulas vivas: {self.live_cells}'
+        plt.title(texto)
         cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
         self.ax.pcolor(np.flip(self.grid, 0), edgecolors=self.gridc, linewidths=1, snap=True, cmap=cmap)
         self.ax.axis('off')
+        self.ax.set_aspect('equal')
         plt.tight_layout()
-        plt.show
+        plt.savefig('pic{:0>4}.png'.format(i))
 
     def visualize(self):
         """Printable version of the game state"""
@@ -226,8 +229,8 @@ if __name__ == "__main__":
     # cuadricula.randgen(6)
     cuadricula.manualgen(patterns.get('GGG'))
     cuadricula.visualize()
-    for i in range(500):
-        # cuadricula.create_image(i)
+    for i in range(100):
+        cuadricula.create_image(i)
         cuadricula.toroidal_step()
         cuadricula.visualize()
     
