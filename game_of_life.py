@@ -2,11 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import matplotlib.colors
+import json
+import datetime
 
 class Grid:
     # Properties
-    def __init__(self,size):
+    def __init__(self,size,start=0):
         self.size = size
+        self.initial_state = start
         if type(size) == type(6):
 
             self.grid = np.zeros((size,size))
@@ -33,12 +36,14 @@ class Grid:
         for coordenada in puntos:
             self.grid[coordenada[1],coordenada[0]] = 1
         self.live_cells = contador(self.grid)
+        self.initial_state = self.grid.copy()
 
     def manualgen(self,coordinates):
         """Manual generation of live cells"""
         for coordenada in coordinates:
             self.grid[coordenada[1],coordenada[0]] = 1
         self.live_cells = contador(self.grid)
+        self.initial_state = self.grid.copy()
     
     def matrixgen(self, matrix):
         """Generation with live cells"""
@@ -49,10 +54,13 @@ class Grid:
                 if len(row) != self.size:
                     raise Exception('Length error')
             self.grid = np.array(matrix)
+        self.live_cells = contador(self.grid)
+        self.initial_state = self.grid.copy()
 
     def create_image(self, i):
+        """Takes an screenshot of the actual game state"""
         # self.step()
-        texto = f'Generación: {self.iterations}\nCelulas vivas: {self.live_cells}'
+        texto = f'Generación: {self.iterations}    Celulas vivas: {self.live_cells}'
         plt.title(texto)
         cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
         self.ax.pcolor(np.flip(self.grid, 0), edgecolors=self.gridc, linewidths=1, snap=True, cmap=cmap)
@@ -184,8 +192,51 @@ class Grid:
         self.iterations += 1
         self.live_cells = contador(self.grid)
 
+    def keep(self,nombre=datetime.datetime.now()):
+        guardado = {
+            'size':self.size,
+            'grid':gen_positions(self.grid),
+            'start state':gen_positions(self.initial_state),
+            'generation':self.iterations,
+            'live cells':self.live_cells,
+            'deathcolor':self.color0,
+            'livecolor':self.color1,
+            'gridcolor':self.gridc
+        }
+        texto = f'{datetime.datetime.now()}\n{json.dumps(guardado)}'
+        if type(nombre)==type('Marianita hermosa'):
+            nombre = nombre.replace('.jvpm2','')
+        with open(f'{nombre}.jvpm2', 'w') as guardar:
+            guardar.write(texto)
+
+def gen_positions(array):
+    posiciones = []
+    r, c = array.shape
+    for row in range(r):
+        for column in range(c):
+            if array[row, column] == 1:
+                posiciones.append((column, row))
+            else:
+                pass
+    return posiciones
+
+def dictgen(route):
+    with open(route, 'r') as documento:
+        fecha = documento.readline()
+        jsonstr = documento.readline()
+        estado = json.loads(jsonstr)
+        cuadricula = Grid(estado.get('size'))
+        cuadricula.manualgen(estado.get('grid'))
+        cuadricula.initial_state = arreglar(estado.get('size') ,estado.get('start state'))
+        cuadricula.iterations = estado.get('generation')
+        cuadricula.live_cells = estado.get('live cells')
+        cuadricula.color0 = estado.get('deathcolor')
+        cuadricula.color1 = estado.get('livecolor')
+        cuadricula.gridc = estado.get('gridcolor')
+    return cuadricula
+
 def docgen(route):
-    """Creates an instance of the class «Grid» and the game state from a 
+    """Creates an instance of the class "Grid" and the game state from a 
     document"""
     matrix = []
     with open(route, 'r') as document:
@@ -210,6 +261,29 @@ def contador(arreglo, target=1):
                 pass
     return contador
 
+def arreglar(size, array):
+    arreglo = np.zeros((size, size))
+    for cor in array:
+        arreglo[cor[1], cor[0]] = 1
+    return arreglo
+
+def press(array):
+    n, m = array.shape
+    longitud = '-'*2*n
+    imprimir = f'Generación:{0}\n'
+    imprimir += f'Población:{contador(array)}\n'
+    imprimir += f'┌{longitud}┐\n'
+    for i in array:
+        imprimir += '|'
+        for j in i:
+            if j == 1:
+                imprimir += '██'
+            elif j == 0:
+                imprimir += '[]'
+        imprimir += '|\n'
+    imprimir += f'└{longitud}┘\n'
+    print(imprimir)
+
 # Some interesting patterns to play
 patterns = {
     'giros' : [(2,2),(2,3),(2,1)],
@@ -225,16 +299,25 @@ patterns = {
 }
 
 if __name__ == "__main__":
-    cuadricula = Grid(40)
+    """Generación normal"""
+    # cuadricula = Grid(40)
     # cuadricula.randgen(6)
-    cuadricula.manualgen(patterns.get('GGG'))
-    cuadricula.visualize()
-    for i in range(100):
-        cuadricula.create_image(i)
-        cuadricula.toroidal_step()
-        cuadricula.visualize()
+    # cuadricula.manualgen(patterns.get('GGG'))
+    # cuadricula.visualize()
+    # for i in range(500):
+        # cuadricula.create_image(i)
+    #     cuadricula.toroidal_step()
+    #     cuadricula.visualize()
+    # cuadricula.keep('intentando')
     
+    """Generación documentos pm2"""
     # cuadricula = docgen('/Users/Macbook/Desktop/Python/PrograM/Proyecto 2/carga.pm2')
     # cuadricula.visualize()
+
+    """Generación documentos jvpm2"""
+    cuadricula = dictgen('intentando.jvpm2')
+    press(cuadricula.initial_state)
+    cuadricula.visualize()
+    cuadricula.create_image(1)
 
 #
