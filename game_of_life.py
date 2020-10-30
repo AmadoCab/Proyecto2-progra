@@ -21,6 +21,7 @@ class Grid:
     color1 = 'w'
     gridc = 'darkgrey'
     fig, ax = plt.subplots()
+    pause = False
 
     # Methods
     def randgen(self, cant):
@@ -59,7 +60,6 @@ class Grid:
 
     def create_image(self, i):
         """Takes an screenshot of the actual game state"""
-        # self.step()
         texto = f'Generación: {self.iterations}    Celulas vivas: {self.live_cells}'
         plt.title(texto)
         cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
@@ -68,6 +68,44 @@ class Grid:
         self.ax.set_aspect('equal')
         plt.tight_layout()
         plt.savefig('pic{:0>4}.png'.format(i))
+
+    def frames(self, i):
+        if self.pause:
+            pass
+        else:
+            self.step()
+        texto = f'Generación: {self.iterations}    Celulas vivas: {self.live_cells}'
+        plt.title(texto)
+        cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
+        c = self.ax.pcolor(np.flip(self.grid, 0), edgecolors=self.gridc, linewidths=1, snap=True, cmap=cmap)
+        self.ax.axis('off')
+        self.ax.set_aspect('equal')
+        plt.tight_layout()
+        return c
+
+    def toroidal_frames(self, i):
+        if self.pause:
+            pass
+        else:
+            self.toroidal_step()
+        texto = f'Generación: {self.iterations}    Celulas vivas: {self.live_cells}'
+        plt.title(texto)
+        cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
+        c = self.ax.pcolor(np.flip(self.grid, 0), edgecolors=self.gridc, linewidths=1, snap=True, cmap=cmap)
+        self.ax.axis('off')
+        self.ax.set_aspect('equal')
+        plt.tight_layout()
+        return c
+
+    def animate(self, borders):
+        if borders == 'normal':
+            anim = FuncAnimation(cuadricula.fig, cuadricula.toroidal_frames, frames=5, interval=20, repeat=True)
+            plt.show()
+        elif borders == 'toroidal':
+            anim = FuncAnimation(cuadricula.fig, cuadricula.toroidal_frames, frames=5, interval=20, repeat=True)
+            plt.show()
+        else:
+            print('todo mal')
 
     def visualize(self):
         """Printable version of the game state"""
@@ -318,6 +356,5 @@ if __name__ == "__main__":
     cuadricula = dictgen('intentando.jvpm2')
     press(cuadricula.initial_state)
     cuadricula.visualize()
-    cuadricula.create_image(1)
-
+    cuadricula.animate('toroidal')
 #
