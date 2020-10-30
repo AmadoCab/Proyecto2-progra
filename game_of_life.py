@@ -74,6 +74,7 @@ class Grid:
             pass
         else:
             self.step()
+        self.ax.clear()
         texto = f'Generación: {self.iterations}    Celulas vivas: {self.live_cells}'
         plt.title(texto)
         cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
@@ -88,6 +89,7 @@ class Grid:
             pass
         else:
             self.toroidal_step()
+        self.ax.clear()
         texto = f'Generación: {self.iterations}    Celulas vivas: {self.live_cells}'
         plt.title(texto)
         cmap = matplotlib.colors.ListedColormap([self.color0,self.color1])
