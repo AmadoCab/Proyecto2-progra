@@ -1,6 +1,7 @@
 import game_of_life as gol
 import gi
 from webbrowser import open_new
+import concurrent.futures
 from matplotlib.backends.backend_gtk3agg import (
     FigureCanvasGTK3Agg as FigureCanvas)
 
@@ -18,32 +19,55 @@ class MyWindow(Gtk.ApplicationWindow):
         self.set_default_size(500, 500)
 
         ### CONTAINER ###
+        
         grid = Gtk.Grid()
         self.add(grid)
 
-        ### GAME ###
-
         self.game = gol.Grid(40)
         self.game.manualgen(gol.patterns.get('GGG'))
-        self.game.animate('toroidal')
-        canvas = FigureCanvas(self.game.fig)
-        canvas.set_size_request(500, 500)
-        grid.attach(canvas, 0, 0, 5, 5)
 
         ### ELEMENTS ###
 
         # Buttons
         self.reboot = Gtk.Button(label='Rb')
         self.reboot.connect('clicked', self.set_play)
-        grid.attach(self.reboot,1,6,1,1)
+        grid.attach(self.reboot,0,0,2,2)
 
         self.playpause = Gtk.Button(label='PP')
         self.playpause.connect('clicked', self.set_play)
-        grid.attach(self.playpause,2,6,1,1)
+        grid.attach(self.playpause,0,2,2,2)
 
         self.step = Gtk.Button(label='St')
         self.step.connect('clicked', self.set_play)
-        grid.attach(self.step,3,6,1,1)
+        grid.attach(self.step,0,4,2,2)
+
+        self.save = Gtk.Button(label='Save')
+        self.save.connect('clicked', self.set_play)
+        grid.attach(self.save,2,0,1,1)
+
+        self.ss = Gtk.Button(label='SS')
+        self.ss.connect('clicked', self.set_play)
+        grid.attach(self.ss,3,0,1,1)
+
+        self.rand = Gtk.Button(label='Rand')
+        self.rand.connect('clicked', self.set_play)
+        grid.attach(self.rand,2,5,1,1)
+
+        self.manual = Gtk.Button(label='Man')
+        self.manual.connect('clicked', self.set_play)
+        grid.attach(self.manual,3,5,1,1)
+
+        self.nxn = Gtk.Button(label='Size')
+        self.nxn.connect('clicked', self.set_play)
+        grid.attach(self.nxn,2,1,2,1)
+
+        self.velocity = Gtk.Button(label='Vel')
+        self.velocity.connect('clicked', self.set_play)
+        grid.attach(self.velocity,2,4,2,1)
+
+        self.start = Gtk.Button(label='START')
+        self.start.connect('clicked', self.startgame)
+        grid.attach(self.start,2,2,2,2)
 
         ### ACTIONS ###
 
@@ -83,11 +107,16 @@ class MyWindow(Gtk.ApplicationWindow):
         # action added to the application
         self.add_action(source_action)
 
+    def startgame(self, widget):
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            f = executor.submit(self.game.animate, 'toroidal')
+
     def set_play(self, widget):
         if self.game.pause:
             self.game.pause = False
         else:
             self.game.pause = True
+        print(self.game.pause)
 
     # callback function for copy_action
     def copy_callback(self, action, parameter):
@@ -114,7 +143,7 @@ class MyWindow(Gtk.ApplicationWindow):
         # Varibles of the aboutdialog
         image = GdkPixbuf.Pixbuf.new_from_file_at_scale('icono.png',4*12,5*12,True)
         authors = ["Amado Alberto Cabrera Estrada"]
-        comments = "Implementación del juego de la vida para la clase de Programación matemática del segundo semestre de 2020."
+        comments = "Implementación del juego de la vida de Conway para la clase de Programación matemática del segundo semestre de 2020."
         version = "1.0"
 
         # Fill the aboutdialog

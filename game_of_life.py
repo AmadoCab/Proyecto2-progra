@@ -106,10 +106,10 @@ class Grid:
         """Animates the game"""
         if borders == 'normal':
             self.anim = FuncAnimation(self.fig, self.frames, frames=5, interval=self.velocity, repeat=(not self.pause))
-            # plt.show()
+            plt.show()
         elif borders == 'toroidal':
             self.anim = FuncAnimation(self.fig, self.toroidal_frames, frames=5, interval=self.velocity, repeat=(not self.pause))
-            # plt.show()
+            plt.show()
         else:
             print('todo mal')
 
