@@ -22,6 +22,7 @@ class Grid:
     gridc = 'darkgrey'
     fig, ax = plt.subplots()
     pause = False
+    velocity = 20 # In milisecs
 
     # Methods
     def randgen(self, cant):
@@ -70,6 +71,7 @@ class Grid:
         plt.savefig('pic{:0>4}.png'.format(i))
 
     def frames(self, i):
+        """Creates the frames for animation function with normal borders"""
         if self.pause:
             pass
         else:
@@ -85,6 +87,7 @@ class Grid:
         return c
 
     def toroidal_frames(self, i):
+        """Creates the frames for animation function with toroidal borders"""
         if self.pause:
             pass
         else:
@@ -100,12 +103,13 @@ class Grid:
         return c
 
     def animate(self, borders):
+        """Animates the game"""
         if borders == 'normal':
-            anim = FuncAnimation(cuadricula.fig, cuadricula.toroidal_frames, frames=5, interval=20, repeat=True)
-            plt.show()
+            self.anim = FuncAnimation(self.fig, self.frames, frames=5, interval=self.velocity, repeat=(not self.pause))
+            # plt.show()
         elif borders == 'toroidal':
-            anim = FuncAnimation(cuadricula.fig, cuadricula.toroidal_frames, frames=5, interval=20, repeat=True)
-            plt.show()
+            self.anim = FuncAnimation(self.fig, self.toroidal_frames, frames=5, interval=self.velocity, repeat=(not self.pause))
+            # plt.show()
         else:
             print('todo mal')
 
@@ -233,6 +237,7 @@ class Grid:
         self.live_cells = contador(self.grid)
 
     def keep(self,nombre=datetime.datetime.now()):
+        """Keeps the current game state"""
         guardado = {
             'size':self.size,
             'grid':gen_positions(self.grid),
@@ -250,6 +255,7 @@ class Grid:
             guardar.write(texto)
 
 def gen_positions(array):
+    """Generates a list with the positions of live cells"""
     posiciones = []
     r, c = array.shape
     for row in range(r):
@@ -261,6 +267,7 @@ def gen_positions(array):
     return posiciones
 
 def dictgen(route):
+    """Create an instance of 'Grid' from a document codified in JSON"""
     with open(route, 'r') as documento:
         fecha = documento.readline()
         jsonstr = documento.readline()
@@ -302,12 +309,14 @@ def contador(arreglo, target=1):
     return contador
 
 def arreglar(size, array):
+    """Create a numpy array"""
     arreglo = np.zeros((size, size))
     for cor in array:
         arreglo[cor[1], cor[0]] = 1
     return arreglo
 
 def press(array):
+    """Print an array on an 'esthetic' way"""
     n, m = array.shape
     longitud = '-'*2*n
     imprimir = f'Generación:{0}\n'

@@ -1,12 +1,4 @@
-import game_of_life as gol
-import gi
-from webbrowser import open_new
-from matplotlib.backends.backend_gtk3agg import (
-    FigureCanvasGTK3Agg as FigureCanvas)
-
-gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
-from gi.repository import GdkPixbuf
 from gi.repository import GLib
 from gi.repository import Gio
 import sys
@@ -14,38 +6,8 @@ import sys
 
 class MyWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
-        Gtk.Window.__init__(self, title="Game of life", application=app)
-        self.set_default_size(500, 500)
-
-        ### CONTAINER ###
-        grid = Gtk.Grid()
-        self.add(grid)
-
-        ### GAME ###
-
-        self.game = gol.Grid(40)
-        self.game.manualgen(gol.patterns.get('GGG'))
-        self.game.animate('toroidal')
-        canvas = FigureCanvas(self.game.fig)
-        canvas.set_size_request(500, 500)
-        grid.attach(canvas, 0, 0, 5, 5)
-
-        ### ELEMENTS ###
-
-        # Buttons
-        self.reboot = Gtk.Button(label='Rb')
-        self.reboot.connect('clicked', self.set_play)
-        grid.attach(self.reboot,1,6,1,1)
-
-        self.playpause = Gtk.Button(label='PP')
-        self.playpause.connect('clicked', self.set_play)
-        grid.attach(self.playpause,2,6,1,1)
-
-        self.step = Gtk.Button(label='St')
-        self.step.connect('clicked', self.set_play)
-        grid.attach(self.step,3,6,1,1)
-
-        ### ACTIONS ###
+        Gtk.Window.__init__(self, title="MenuBar Example", application=app)
+        self.set_default_size(200, 200)
 
         # action without a state created (name, parameter type)
         copy_action = Gio.SimpleAction.new("copy", None)
@@ -76,19 +38,6 @@ class MyWindow(Gtk.ApplicationWindow):
         # action added to the application
         self.add_action(about_action)
 
-        # action with a state created
-        source_action = Gio.SimpleAction.new("source", None)
-        # action connected to the callback function
-        source_action.connect("activate", self.source_callback)
-        # action added to the application
-        self.add_action(source_action)
-
-    def set_play(self, widget):
-        if self.game.pause:
-            self.game.pause = False
-        else:
-            self.game.pause = True
-
     # callback function for copy_action
     def copy_callback(self, action, parameter):
         print("\"Copy\" activated")
@@ -103,29 +52,23 @@ class MyWindow(Gtk.ApplicationWindow):
         # Note that we set the state of the action!
         action.set_state(parameter)
 
-    def source_callback(self, action, parameter):
-        open_new("https://github.com/AmadoCab/Proyecto2-progra")
-
     # callback function for about (see the AboutDialog example)
     def about_callback(self, action, parameter):
-        # Instance of Gtk.AboutDialog
+        # a  Gtk.AboutDialog
         aboutdialog = Gtk.AboutDialog()
 
-        # Varibles of the aboutdialog
-        image = GdkPixbuf.Pixbuf.new_from_file_at_scale('icono.png',4*12,5*12,True)
-        authors = ["Amado Alberto Cabrera Estrada"]
-        comments = "Implementación del juego de la vida para la clase de Programación matemática del segundo semestre de 2020."
-        version = "1.0"
+        # lists of authors and documenters (will be used later)
+        authors = ["GNOME Documentation Team"]
+        documenters = ["GNOME Documentation Team"]
 
-        # Fill the aboutdialog
-        aboutdialog.set_logo(image)
-        aboutdialog.set_program_name("Game of life")
-        aboutdialog.set_copyright("Copyright \xc2\xa9 2020 Amado C.")
+        # we fill in the aboutdialog
+        aboutdialog.set_program_name("MenuBar Example")
+        aboutdialog.set_copyright(
+            "Copyright \xc2\xa9 2012 GNOME Documentation Team")
         aboutdialog.set_authors(authors)
-        aboutdialog.set_comments(comments)
-        aboutdialog.set_website("https://github.com/AmadoCab/Proyecto2-progra")
-        aboutdialog.set_website_label("Github Source Code")
-        aboutdialog.set_version(version)
+        aboutdialog.set_documenters(documenters)
+        aboutdialog.set_website("http://developer.gnome.org")
+        aboutdialog.set_website_label("GNOME Developer Website")
 
         # to close the aboutdialog when "close" is clicked we connect the
         # "response" signal to on_close
