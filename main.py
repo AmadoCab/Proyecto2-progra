@@ -1,7 +1,6 @@
 import game_of_life as gol
 import gi
 from webbrowser import open_new
-import concurrent.futures
 from matplotlib.backends.backend_gtk3agg import (
     FigureCanvasGTK3Agg as FigureCanvas)
 
@@ -108,8 +107,7 @@ class MyWindow(Gtk.ApplicationWindow):
         self.add_action(source_action)
 
     def startgame(self, widget):
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            f = executor.submit(self.game.animate, 'toroidal')
+        self.game.animate('toroidal')
 
     def set_play(self, widget):
         if self.game.pause:
