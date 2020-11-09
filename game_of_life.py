@@ -349,9 +349,9 @@ patterns = {
 
 if __name__ == "__main__":
     """Generación normal"""
-    # cuadricula = Grid(40)
+    cuadricula = Grid(40)
     # cuadricula.randgen(6)
-    # cuadricula.manualgen(patterns.get('GGG'))
+    cuadricula.manualgen(patterns.get('GGG'))
     # cuadricula.visualize()
     # for i in range(500):
         # cuadricula.create_image(i)
@@ -364,8 +364,8 @@ if __name__ == "__main__":
     # cuadricula.visualize()
 
     """Generación documentos jvpm2"""
-    cuadricula = dictgen('intentando.jvpm2')
-    press(cuadricula.initial_state)
-    cuadricula.visualize()
+    # cuadricula = dictgen('intentando.jvpm2')
+    # press(cuadricula.initial_state)
+    # cuadricula.visualize()
     cuadricula.animate('toroidal')
 #
